@@ -1,125 +1,174 @@
 using UnityEngine;
 
-/// Si el jugador es el 1 WASD, si es el 2 arrow keys.
 public class PlayerController : MonoBehaviour
 {
-    [Header("Identificación del Jugador")]
-    [Tooltip("1 = Jugador 1 (WASD) | 2 = Jugador 2 (Flechas)")]
-    public int playerNumber = 1;
-
     [Header("Movimiento")]
-    public float moveSpeed = 5f;
-    public float jumpForce = 10f;
+    public float moveSpeed = 7f;
 
-    [Header("Detección de suelo")]
+    [Header("Salto")]
+    public float jumpForce = 10f;         // Impulso inicial (salto corto)
+    public float jumpHoldForce = 25f;     // Fuerza extra si mantienes presionado
+    public float jumpHoldDuration = 0.2f; // Tiempo máximo que se puede mantener
+    public float fallMultiplier = 3f;     // Caída más rápida
+    public float lowJumpMultiplier = 5f;  // Caída rápida si sueltas el salto pronto
+
+    [Header("Ground Check")]
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
-    [Header("Visual (Sprite + Animator)")]
-    [Tooltip("Arrastra aquí el hijo que contiene el SpriteRenderer y Animator")]
-    [SerializeField] private Transform visual;
+    [Header("Muerte")]
+    public GameObject deathScreen; // Arrastra aquí tu panel de muerte en el Inspector
 
     private Rigidbody2D rb;
-    private Animator animator;
-
     private bool isGrounded;
-    private GameObject activePlatform;
+    private bool isJumping;
+    private float jumpHoldTimer;
+    private bool jumpButtonHeld;
 
-    private KeyCode keyLeft;
-    private KeyCode keyRight;
-    private KeyCode keyJump;
-    private KeyCode keyPlatform;
-
-    // Animator 
-    private int speedHash;
-    private int groundedHash;
-    private int yVelocityHash;
-
-    void Awake()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
 
-        AssignKeys();
-
-        // Inicializar hashes
-        speedHash = Animator.StringToHash("Speed");
-        groundedHash = Animator.StringToHash("isGrounded");
-        yVelocityHash = Animator.StringToHash("yVelocity");
+        if (deathScreen != null)
+            deathScreen.SetActive(false);
     }
 
     void Update()
     {
         CheckGrounded();
         HandleMovement();
-        HandleJump();
-        UpdateAnimations();
+        HandleJumpInput();
+        ApplyBetterGravity();
     }
 
-    void AssignKeys()
+    // ─────────────────────────────────────────
+    // MOVIMIENTO HORIZONTAL
+    // ─────────────────────────────────────────
+    void HandleMovement()
     {
-        if (playerNumber == 1)
+        float input = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(input * moveSpeed, rb.velocity.y);
+
+        // Voltear sprite según dirección
+        if (input > 0.01f)
+            transform.localScale = new Vector3(1, 1, 1);
+        else if (input < -0.01f)
+            transform.localScale = new Vector3(-1, 1, 1);
+    }
+
+    // ─────────────────────────────────────────
+    // SALTO VARIABLE (mantener = saltar más alto)
+    // ─────────────────────────────────────────
+    void HandleJumpInput()
+    {
+        // Presiona salto estando en el suelo → impulso inicial
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            keyLeft = KeyCode.A;
-            keyRight = KeyCode.D;
-            keyJump = KeyCode.W;
-            keyPlatform = KeyCode.S;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            isJumping = true;
+            jumpHoldTimer = 0f;
         }
-        else
+
+        // Mantener presionado → aplicar fuerza extra hacia arriba
+        if (Input.GetButton("Jump") && isJumping)
         {
-            keyLeft = KeyCode.LeftArrow;
-            keyRight = KeyCode.RightArrow;
-            keyJump = KeyCode.UpArrow;
-            keyPlatform = KeyCode.DownArrow;
+            if (jumpHoldTimer < jumpHoldDuration)
+            {
+                rb.AddForce(Vector2.up * jumpHoldForce * Time.deltaTime, ForceMode2D.Force);
+                jumpHoldTimer += Time.deltaTime;
+            }
+        }
+
+        // Soltó el botón → deja de aplicar fuerza extra
+        if (Input.GetButtonUp("Jump"))
+        {
+            isJumping = false;
         }
     }
 
+    // ─────────────────────────────────────────
+    // GRAVEDAD MEJORADA (caída más natural)
+    // ─────────────────────────────────────────
+    void ApplyBetterGravity()
+    {
+        if (rb.velocity.y < 0)
+        {
+            // Cae rápido
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            // Si soltaste el botón mientras subías, cae más rápido también
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
+        }
+    }
+
+    // ─────────────────────────────────────────
+    // DETECCIÓN DE SUELO
+    // ─────────────────────────────────────────
     void CheckGrounded()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+
+        if (isGrounded)
+            isJumping = false;
     }
 
-    void HandleMovement()
+    // ─────────────────────────────────────────
+    // COLISIONES CON ENEMIGOS
+    // ─────────────────────────────────────────
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        float horizontal = 0f;
-
-        if (Input.GetKey(keyLeft)) horizontal = -1f;
-        if (Input.GetKey(keyRight)) horizontal = 1f;
-
-        rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
-
-        // Voltear SOLO el visual (sin romper escala)
-        if (horizontal != 0 && visual != null)
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            Vector3 scale = visual.localScale;
-            scale.x = Mathf.Abs(scale.x) * Mathf.Sign(horizontal);
-            visual.localScale = scale;
+            // Revisar si el jugador viene desde arriba (pisa al enemigo)
+            foreach (ContactPoint2D contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.5f) // Normal apunta hacia arriba → jugador encima
+                {
+                    // El jugador pisó al enemigo → pequeño rebote
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForce * 0.7f);
+                    return; // No muere, el enemigo es quien maneja su propia muerte
+                }
+            }
+
+            // Lo tocó por los lados o desde abajo → jugador muere
+            Die();
         }
     }
 
-    void HandleJump()
+    // ─────────────────────────────────────────
+    // MUERTE DEL JUGADOR
+    // ─────────────────────────────────────────
+    public void Die()
     {
-        if (Input.GetKeyDown(keyJump) && isGrounded)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
+        this.enabled = false;
+        StartCoroutine(DeathDelay());
     }
 
-    void UpdateAnimations()
+    System.Collections.IEnumerator DeathDelay()
     {
-        float speed = Mathf.Abs(rb.velocity.x);
+        // Congela TODO el juego (enemigos, físicas, animaciones, etc.)
+        Time.timeScale = 0f;
 
-        animator.SetFloat(speedHash, speed);
-        animator.SetBool(groundedHash, isGrounded);
-        animator.SetFloat(yVelocityHash, rb.velocity.y);
+        // WaitForSecondsRealtime ignora el timeScale, así el timer sigue corriendo
+        yield return new WaitForSecondsRealtime(3f);
+
+        // Mostrar pantalla de muerte
+        if (deathScreen != null)
+            deathScreen.SetActive(true);
     }
 
+    // ─────────────────────────────────────────
+    // DEBUG (visualizar el groundCheck en Scene)
+    // ─────────────────────────────────────────
     void OnDrawGizmosSelected()
     {
-        if (groundCheck == null) return;
-
-        Gizmos.color = isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
     }
 }
