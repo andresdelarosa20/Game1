@@ -42,3 +42,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 4273987975
+    locked: 0
+  - name: Mountains
+    uniqueID: 2085436045
+    locked: 0
+  - name: Ground
+    uniqueID: 2934494321
+    locked: 0
+  - name: Decoration Ground
+    uniqueID: 2009958627
+    locked: 0
+  - name: Personajes/Enemigos
+    uniqueID: 3084992971
+    locked: 0
+  - name: Decoration
+    uniqueID: 1366212397
+    locked: 0
+  - name: UI
+    uniqueID: 1675769799
+    locked: 0
