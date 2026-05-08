@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7a4076483e3ab4f4bb12b69c983822b6
+guid: 3608f298fb50c9744894f967b837f96d
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PercyJump_0
+      name: PercyIdle_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e20df6ed64528a441aab495d2d28d393
-      internalID: 2005804527
+      spriteID: 0a7b953ace30ee047aff45b4e66b9124
+      internalID: 884120145
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PercyJump_1
+      name: PercyIdle_1
       rect:
         serializedVersion: 2
         x: 256
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 835aca912339035449a5665bac7c098b
-      internalID: 833326388
+      spriteID: 8beeabd9f0dda5840af8fc5d05703d8a
+      internalID: -2100892641
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PercyJump_2
+      name: PercyIdle_2
       rect:
         serializedVersion: 2
         x: 512
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d6f9e2a33c290c840992b9ccfedb8002
-      internalID: 730566213
+      spriteID: 3ff5400bc1ce1bb4cbb278d31b28ff84
+      internalID: -1167508762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PercyJump_3
+      name: PercyIdle_3
       rect:
         serializedVersion: 2
         x: 768
@@ -187,50 +187,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 28ec9fee1e505354bbb5c62a458c956f
-      internalID: 2061745504
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PercyJump_4
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 256
-        height: 256
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3a8e4cab420547541adeca663abd47c0
-      internalID: 1679568333
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PercyJump_5
-      rect:
-        serializedVersion: 2
-        x: 1280
-        y: 0
-        width: 256
-        height: 256
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0a911a74f423f28448bf8c3cd98429a8
-      internalID: -2103062938
+      spriteID: 264316512d2ca0e4d9df129c385c86b0
+      internalID: -1388828526
       vertices: []
       indices: 
       edges: []
@@ -246,12 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      PercyJump_0: 2005804527
-      PercyJump_1: 833326388
-      PercyJump_2: 730566213
-      PercyJump_3: 2061745504
-      PercyJump_4: 1679568333
-      PercyJump_5: -2103062938
+      PercyIdle_0: 884120145
+      PercyIdle_1: -2100892641
+      PercyIdle_2: -1167508762
+      PercyIdle_3: -1388828526
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
