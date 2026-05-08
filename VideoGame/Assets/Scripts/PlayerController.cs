@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
+    private bool isDead = false;
 
     private bool isGrounded;
     private bool isJumping;
@@ -132,15 +133,25 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        if (isDead) return;
+
+        isDead = true;
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = 0f;
+
+        anim.SetTrigger("Die");
+
         this.enabled = false;
+
         StartCoroutine(DeathDelay());
     }
 
     System.Collections.IEnumerator DeathDelay()
     {
-        Time.timeScale = 0f;
+        yield return new WaitForSeconds(1.2f); // duración animación
 
-        yield return new WaitForSecondsRealtime(3f);
+        Time.timeScale = 0f;
 
         if (deathScreen != null)
             deathScreen.SetActive(true);
