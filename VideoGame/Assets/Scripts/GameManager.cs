@@ -75,12 +75,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────
-    // ALTERNATIVA: recargar toda la escena
-    // (más simple, descomenta si preferís esto)
-    // ─────────────────────────────────────────
-    // public void Retry()
-    // {
-    //     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    // }
+
 }
