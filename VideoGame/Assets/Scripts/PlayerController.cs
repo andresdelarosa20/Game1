@@ -147,6 +147,26 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(DeathDelay());
     }
 
+    public void ResetPlayer()
+    {
+        isDead = false;
+        isJumping = false;
+        jumpHoldTimer = 0f;
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = 1f;
+
+        // Reactivar script
+        this.enabled = true;
+
+        // Resetear animator completo
+        anim.Rebind();
+        anim.Update(0f);
+
+        // Volver a Idle
+        anim.Play("Idle", 0, 0f);
+    }
+
     System.Collections.IEnumerator DeathDelay()
     {
         yield return new WaitForSeconds(1.2f); // duración animación

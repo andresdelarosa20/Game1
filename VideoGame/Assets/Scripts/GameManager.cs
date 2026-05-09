@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
             rb.gravityScale = 1f;
         }
 
-        player.enabled = true;
+        player.ResetPlayer();
 
         // 4. Resetear enemigos caminadores
         foreach (EnemyController enemy in enemies)
