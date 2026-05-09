@@ -165,7 +165,7 @@ public class PlayerController : MonoBehaviour
 
         // Volver a Idle
         anim.Play("Idle", 0, 0f);
-    }
+    }   
 
     System.Collections.IEnumerator DeathDelay()
     {
